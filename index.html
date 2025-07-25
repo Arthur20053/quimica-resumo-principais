@@ -10,9 +10,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Chosen Palette: Warm Neutrals -->
-    <!-- Application Structure Plan: A tab-based single-page application. Each tab corresponds to one of the three main chemistry topics (Soluções, Termoquímica, Orgânica). This structure was chosen to mirror the user's study plan ("Prova 1, 2, 3"), preventing information overload and allowing focused learning. Within each tab, every specific topic listed by the user has its own comprehensive article, containing: 1) A simple explanation. 2) Static easy/hard examples for foundational knowledge. 3) An interactive calculator/tool for hands-on practice. 4) A Gemini API button for deeper, on-demand exploration (new problems, real-world examples, etc.). This layered approach ensures core content is always present while offering advanced interactive features. The user's API key is now hardcoded directly into the script for maximum portability and zero setup. -->
+    <!-- Application Structure Plan: A tab-based single-page application. Each tab corresponds to one of the three main chemistry topics (Soluções, Termoquímica, Orgânica). This structure was chosen to mirror the user's study plan ("Prova 1, 2, 3"), preventing information overload and allowing focused learning. Within each tab, every specific topic listed by the user has its own comprehensive article, containing: 1) A simple explanation with a numerical example. 2) Static easy/hard examples for foundational knowledge. 3) An interactive calculator/tool for hands-on practice. 4) A Gemini API button for deeper, on-demand exploration (new problems, real-world examples, etc.). A follow-up Q&A feature has been added, appearing after a problem is generated, allowing users to ask specific questions about it. This layered approach ensures core content is always present while offering advanced interactive features. The user's API key is now hardcoded directly into the script for maximum portability and zero setup. -->
     <!-- Visualization & Content Choices: 
-        - Concentração Comum/Molar/Diluição: Goal: Teach and practice calculation. Method: Static text examples + Interactive forms (HTML/JS). Interaction: User inputs data, clicks 'calculate', sees result. Gemini generates new word problems in a "Fácil/Difícil" format. Justification: Complete learning cycle from theory to practice to advanced application in a consistent format.
+        - Concentração Comum/Molar/Diluição: Goal: Teach and practice calculation. Method: Static text examples + Interactive forms (HTML/JS). Interaction: User inputs data, clicks 'calculate', sees result. Gemini generates new word problems in a "Fácil/Difícil" format, and a follow-up Q&A input appears for clarification. Justification: Complete learning cycle from theory to practice to clarification, ensuring full comprehension.
         - Variação de Entalpia: Goal: Compare energy levels. Method: Bar chart (Chart.js) + static examples. Interaction: Toggle between exo/endothermic examples to see the chart change. Gemini provides real-world examples. Justification: Visual and contextual learning.
         - Lei de Hess: Goal: Demonstrate a complex process. Method: Static step-by-step text explanation of a canonical problem. Interaction: Gemini button to explain the strategic thinking behind solving Hess problems. Justification: Deconstructs the logic of a difficult topic.
         - Classificação de Cadeias: Goal: Test pattern recognition. Method: Static explanation + Interactive classifier. Interaction: User classifies a molecule and gets feedback. Gemini generates new molecules to classify. Justification: Reinforces rules through repeated, varied practice.
@@ -25,9 +25,10 @@
         .tab-btn.active { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
         .content-section { display: none; }
         .content-section.active { display: block; }
-        .interactive-card { background-color: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
+        .interactive-card { background-color: rgba(249, 250, 251, 0.8); backdrop-filter: blur(10px); }
         .chart-container { position: relative; width: 100%; max-width: 500px; margin-left: auto; margin-right: auto; height: 300px; max-height: 350px; }
         .gemini-response { min-height: 100px; background-color: #F0F9FF; border-left: 4px solid #3B82F6; }
+        .doubt-section { display: none; }
         .loader {
             border: 4px solid #f3f3f3;
             border-top: 4px solid #3498db;
@@ -48,7 +49,7 @@
     <div class="container mx-auto max-w-6xl p-4 sm:p-6 lg:p-8">
         <header class="text-center mb-8">
             <h1 class="text-4xl font-bold text-[#E07A5F]">Guia Interativo de Química Completo 🧪</h1>
-            <p class="text-lg mt-2 text-[#3C3633]">Com explicações, exemplos e o poder do Gemini ✨</p>
+            <p class="text-lg mt-2 text-[#3C3633]">Com explicações, exemplos e o poder da IA ✨</p>
         </header>
 
         <nav id="tab-navigation" class="flex justify-center flex-wrap gap-2 sm:gap-4 mb-8">
@@ -63,8 +64,14 @@
                 <!-- Concentração Comum -->
                 <article class="p-6 bg-white rounded-xl shadow-lg">
                     <h3 class="text-2xl font-bold mb-2 text-[#E07A5F]">1. Concentração Comum (C)</h3>
-                    <p class="mb-4">É o jeito mais simples de medir o quão "forte" é um suco: mede a massa do pó (em gramas) por volume de suco (em litros).</p>
-                    <p class="mb-4 font-mono text-center bg-gray-100 p-2 rounded-md"><b>Fórmula:</b> C = m / V</p>
+                    <div class="p-4 mb-4 bg-blue-50 border-l-4 border-blue-300 rounded-r-lg">
+                        <h4 class="font-bold text-blue-800">O que é isso? (Explicação simples)</h4>
+                        <p class="mt-1 text-blue-900">Pense num suco de pozinho. A "concentração" é o quão forte o suco ficou. A Concentração Comum mede a quantidade de pó (massa) em um certo volume de suco. <br><b>Exemplo prático:</b> Se você tem <strong>10g</strong> de pó (m=10g) e faz <strong>2L</strong> de suco (V=2L), a conta é `C = 10 / 2 = 5 g/L`. Cada litro do seu suco tem 5 gramas do pó.</p>
+                    </div>
+                    <div class="mb-4 font-mono text-center bg-gray-100 p-2 rounded-md">
+                        <p><b>Fórmula:</b> C = m / V</p>
+                        <p class="text-xs text-gray-600"><i><b>Legenda:</b><br><b>C</b> = Concentração, medida em gramas por litro (g/L)<br><b>m</b> = massa do pó, medida em gramas (g)<br><b>V</b> = volume do suco, medido em litros (L)</i></p>
+                    </div>
                     <div class="grid md:grid-cols-2 gap-6 mb-6">
                         <div class="bg-green-50 p-4 rounded-lg border border-green-200">
                             <h4 class="font-semibold text-lg mb-2">Questão Fácil</h4>
@@ -81,16 +88,43 @@
                     </div>
                     <div class="p-4 border-t-2 border-dashed border-gray-200">
                         <h4 class="font-semibold text-lg mb-2 text-center">Pratique você mesmo!</h4>
-                        <button id="btn-gemini-cc" class="w-full mb-4 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600">✨ peça um novo problema a IA</button>
+                        <div class="interactive-card border border-gray-200 rounded-lg p-4 mb-6">
+                            <h4 class="font-semibold text-lg mb-2">Calculadora de Concentração Comum</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <label for="cc-massa" class="block text-sm font-medium">Massa (m) em gramas:</label>
+                                    <input type="number" id="cc-massa" placeholder="ex: 20" class="w-full mt-1 p-2 border rounded-md">
+                                </div>
+                                <div>
+                                    <label for="cc-volume" class="block text-sm font-medium">Volume (V) em litros:</label>
+                                    <input type="number" id="cc-volume" placeholder="ex: 2" class="w-full mt-1 p-2 border rounded-md">
+                                </div>
+                                <button id="btn-calc-cc" class="w-full bg-[#E07A5F] text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90">Calcular</button>
+                            </div>
+                            <div id="res-cc" class="mt-4 text-center font-semibold text-lg h-8"></div>
+                        </div>
+                        <button id="btn-gemini-cc" class="w-full mb-4 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600">✨ Peça um novo problema à IA</button>
                         <div id="gemini-res-cc" class="gemini-response p-4 rounded-md text-sm"></div>
+                        <div id="doubt-section-cc" class="doubt-section mt-4">
+                            <h4 class="font-semibold text-lg mb-2">Ficou com alguma dúvida sobre o problema acima?</h4>
+                            <textarea id="doubt-input-cc" class="w-full p-2 border rounded-md" rows="3" placeholder="Digite aqui sua pergunta sobre o problema ou a resolução..."></textarea>
+                            <button id="btn-doubt-cc" class="w-full mt-2 bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700">Tirar Dúvida</button>
+                            <div id="gemini-res-doubt-cc" class="gemini-response p-4 mt-4 rounded-md text-sm"></div>
+                        </div>
                     </div>
                 </article>
 
                 <!-- Concentração Molar -->
                 <article class="p-6 bg-white rounded-xl shadow-lg">
                     <h3 class="text-2xl font-bold mb-2 text-[#E07A5F]">2. Concentração Molar (M)</h3>
-                    <p class="mb-4">Em vez de massa, usamos "pacotinhos" de moléculas (mols). A molaridade mede quantos mols temos por litro de solução.</p>
-                    <p class="mb-4 font-mono text-center bg-gray-100 p-2 rounded-md"><b>Fórmula:</b> M = n / V (onde n = massa / Massa Molar)</p>
+                    <div class="p-4 mb-4 bg-blue-50 border-l-4 border-blue-300 rounded-r-lg">
+                        <h4 class="font-bold text-blue-800">O que é isso? (Explicação simples)</h4>
+                        <p class="mt-1 text-blue-900">Imagine que, em vez de pesar o pó do suco, você contasse ele em "pacotinhos". O "mol" é esse pacotinho. A Molaridade é a quantidade de <strong>pacotinhos (mols)</strong> de pó em um certo volume de suco (em litros). <br><b>Exemplo prático:</b> Se você tem <strong>2 pacotinhos</strong> (n=2 mols) e faz <strong>0.5L</strong> de solução (V=0.5L), a conta é `M = 2 / 0.5 = 4 mol/L`.</p>
+                    </div>
+                    <div class="mb-4 font-mono text-center bg-gray-100 p-2 rounded-md">
+                        <p><b>Fórmula:</b> M = n / V</p>
+                        <p class="text-xs text-gray-600"><i><b>Legenda:</b><br><b>M</b> = Molaridade, medida em mols por litro (mol/L)<br><b>n</b> = nº de mols (os "pacotinhos"), medido em mol<br><b>V</b> = volume da solução, medido em litros (L)</i></p>
+                    </div>
                     <div class="grid md:grid-cols-2 gap-6 mb-6">
                         <div class="bg-green-50 p-4 rounded-lg border border-green-200">
                             <h4 class="font-semibold text-lg mb-2">Questão Fácil</h4>
@@ -107,16 +141,43 @@
                     </div>
                      <div class="p-4 border-t-2 border-dashed border-gray-200">
                         <h4 class="font-semibold text-lg mb-2 text-center">Pratique você mesmo!</h4>
-                        <button id="btn-gemini-cm" class="w-full mb-4 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600">✨ peça um novo problema a IA</button>
+                        <div class="interactive-card border border-gray-200 rounded-lg p-4 mb-6">
+                            <h4 class="font-semibold text-lg mb-2">Calculadora de Molaridade</h4>
+                             <div class="space-y-3">
+                                <div>
+                                    <label for="cm-mols" class="block text-sm font-medium">Nº de mols (n):</label>
+                                    <input type="number" id="cm-mols" placeholder="ex: 1" class="w-full mt-1 p-2 border rounded-md">
+                                </div>
+                                <div>
+                                    <label for="cm-volume" class="block text-sm font-medium">Volume (V) em litros:</label>
+                                    <input type="number" id="cm-volume" placeholder="ex: 0.5" class="w-full mt-1 p-2 border rounded-md">
+                                </div>
+                                <button id="btn-calc-cm" class="w-full bg-[#E07A5F] text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90">Calcular</button>
+                            </div>
+                            <div id="res-cm" class="mt-4 text-center font-semibold text-lg h-8"></div>
+                        </div>
+                        <button id="btn-gemini-cm" class="w-full mb-4 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600">✨ Peça um novo problema à IA</button>
                         <div id="gemini-res-cm" class="gemini-response p-4 rounded-md text-sm"></div>
+                        <div id="doubt-section-cm" class="doubt-section mt-4">
+                            <h4 class="font-semibold text-lg mb-2">Ficou com alguma dúvida sobre o problema acima?</h4>
+                            <textarea id="doubt-input-cm" class="w-full p-2 border rounded-md" rows="3" placeholder="Digite aqui sua pergunta sobre o problema ou a resolução..."></textarea>
+                            <button id="btn-doubt-cm" class="w-full mt-2 bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700">Tirar Dúvida</button>
+                            <div id="gemini-res-doubt-cm" class="gemini-response p-4 mt-4 rounded-md text-sm"></div>
+                        </div>
                     </div>
                 </article>
 
                 <!-- Diluição -->
                 <article class="p-6 bg-white rounded-xl shadow-lg">
                     <h3 class="text-2xl font-bold mb-2 text-[#E07A5F]">3. Diluição</h3>
-                    <p class="mb-4">Diluir é adicionar mais solvente (água) para diminuir a concentração. A quantidade de soluto não muda!</p>
-                    <p class="mb-4 font-mono text-center bg-gray-100 p-2 rounded-md"><b>Fórmula:</b> C₁V₁ = C₂V₂</p>
+                    <div class="p-4 mb-4 bg-blue-50 border-l-4 border-blue-300 rounded-r-lg">
+                        <h4 class="font-bold text-blue-800">O que é isso? (Explicação simples)</h4>
+                        <p class="mt-1 text-blue-900">Diluir é pegar uma solução concentrada e <strong>adicionar mais solvente</strong> (geralmente água) para deixá-la mais fraca. A quantidade de soluto não muda, só o volume total que aumenta. <br><b>Exemplo prático:</b> Se você tem <strong>0.1L</strong> (V₁) de um suco forte com concentração <strong>10 g/L</strong> (C₁) e adiciona água até ter <strong>0.2L</strong> (V₂), a nova concentração (C₂) será `10 × 0.1 = C₂ × 0.2`, então `C₂ = 5 g/L`.</p>
+                    </div>
+                    <div class="mb-4 font-mono text-center bg-gray-100 p-2 rounded-md">
+                        <p><b>Fórmula:</b> C₁V₁ = C₂V₂</p>
+                        <p class="text-xs text-gray-600"><i><b>Legenda:</b><br><b>C₁</b> e <b>V₁</b> = Concentração e Volume iniciais (antes de diluir)<br><b>C₂</b> e <b>V₂</b> = Concentração e Volume finais (depois de diluir)</i></p>
+                    </div>
                     <div class="grid md:grid-cols-2 gap-6 mb-6">
                         <div class="bg-green-50 p-4 rounded-lg border border-green-200">
                             <h4 class="font-semibold text-lg mb-2">Questão Fácil</h4>
@@ -133,8 +194,33 @@
                     </div>
                      <div class="p-4 border-t-2 border-dashed border-gray-200">
                         <h4 class="font-semibold text-lg mb-2 text-center">Pratique você mesmo!</h4>
-                        <button id="btn-gemini-diluicao" class="w-full mb-4 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600">✨ peça um novo problema a IA</button>
+                        <div class="interactive-card border border-gray-200 rounded-lg p-4 mb-6">
+                            <h4 class="font-semibold text-lg mb-2">Calculadora de Diluição (achar C₂)</h4>
+                             <div class="space-y-3">
+                                <div>
+                                    <label for="d-c1" class="block text-sm font-medium">Concentração Inicial (C₁):</label>
+                                    <input type="number" id="d-c1" placeholder="ex: 10" class="w-full mt-1 p-2 border rounded-md">
+                                </div>
+                                <div>
+                                    <label for="d-v1" class="block text-sm font-medium">Volume Inicial (V₁):</label>
+                                    <input type="number" id="d-v1" placeholder="ex: 50" class="w-full mt-1 p-2 border rounded-md">
+                                </div>
+                                 <div>
+                                    <label for="d-v2" class="block text-sm font-medium">Volume Final (V₂):</label>
+                                    <input type="number" id="d-v2" placeholder="ex: 250" class="w-full mt-1 p-2 border rounded-md">
+                                </div>
+                                <button id="btn-calc-d" class="w-full bg-[#E07A5F] text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-90">Calcular</button>
+                            </div>
+                            <div id="res-d" class="mt-4 text-center font-semibold text-lg h-8"></div>
+                        </div>
+                        <button id="btn-gemini-diluicao" class="w-full mb-4 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600">✨ Peça um novo problema à IA</button>
                         <div id="gemini-res-diluicao" class="gemini-response p-4 rounded-md text-sm"></div>
+                        <div id="doubt-section-diluicao" class="doubt-section mt-4">
+                            <h4 class="font-semibold text-lg mb-2">Ficou com alguma dúvida sobre o problema acima?</h4>
+                            <textarea id="doubt-input-diluicao" class="w-full p-2 border rounded-md" rows="3" placeholder="Digite aqui sua pergunta sobre o problema ou a resolução..."></textarea>
+                            <button id="btn-doubt-diluicao" class="w-full mt-2 bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700">Tirar Dúvida</button>
+                            <div id="gemini-res-doubt-diluicao" class="gemini-response p-4 mt-4 rounded-md text-sm"></div>
+                        </div>
                     </div>
                 </article>
             </section>
@@ -144,8 +230,14 @@
                 <!-- Variação de Entalpia -->
                 <article class="p-6 bg-white rounded-xl shadow-lg">
                     <h3 class="text-2xl font-bold mb-2 text-[#E07A5F]">1. Variação de Entalpia (ΔH)</h3>
-                    <p class="mb-4">É a medida do calor liberado ou absorvido numa reação. Se esquenta, é <b>exotérmica (ΔH negativo)</b>. Se esfria, é <b>endotérmica (ΔH positivo)</b>.</p>
-                    <p class="mb-4 font-mono text-center bg-gray-100 p-2 rounded-md"><b>Fórmula:</b> ΔH = H<sub>produtos</sub> - H<sub>reagentes</sub></p>
+                    <div class="p-4 mb-4 bg-blue-50 border-l-4 border-blue-300 rounded-r-lg">
+                        <h4 class="font-bold text-blue-800">O que é isso? (Explicação simples)</h4>
+                        <p class="mt-1 text-blue-900">É o calor liberado ou absorvido numa reação. Se os ingredientes (reagentes) tinham energia <strong>100</strong> e o produto final tem energia <strong>20</strong>, a variação foi `ΔH = 20 - 100 = -80`. Como o resultado é negativo, a reação liberou 80 de energia (esquentou!) e é <strong>exotérmica</strong>. Se fosse o contrário, seria <strong>endotérmica</strong>.</p>
+                    </div>
+                    <div class="mb-4 font-mono text-center bg-gray-100 p-2 rounded-md">
+                        <p><b>Fórmula:</b> ΔH = H<sub>produtos</sub> - H<sub>reagentes</sub></p>
+                        <p class="text-xs text-gray-600"><i><b>Legenda:</b><br><b>ΔH</b> = Variação da Entalpia (o calor total da reação)<br><b>H</b> = Entalpia (a energia guardada na substância)</i></p>
+                    </div>
                     <div class="chart-container mx-auto mb-4">
                         <canvas id="entalpiaChart"></canvas>
                     </div>
@@ -163,7 +255,10 @@
                 <!-- Lei de Hess -->
                 <article class="p-6 bg-white rounded-xl shadow-lg">
                     <h3 class="text-2xl font-bold mb-2 text-[#E07A5F]">2. Lei de Hess</h3>
-                    <p class="mb-4">Permite calcular o ΔH de uma reação somando o ΔH de outras reações, como um quebra-cabeça. Você pode inverter (troca o sinal do ΔH) ou multiplicar (multiplica o ΔH) as reações-base.</p>
+                    <div class="p-4 mb-4 bg-blue-50 border-l-4 border-blue-300 rounded-r-lg">
+                        <h4 class="font-bold text-blue-800">O que é isso? (Explicação simples)</h4>
+                        <p class="mt-1 text-blue-900">Imagine que você quer saber a altura de um prédio, mas não consegue medir de uma vez. Porém, você sabe a altura de cada andar. O que você faz? <strong>Soma a altura de todos os andares!</strong> A Lei de Hess é isso: permite calcular o calor de uma reação somando o calor de outras reações que, juntas, formam a reação que você quer.</p>
+                    </div>
                     <div class="bg-amber-50 p-4 rounded-lg border border-amber-200">
                         <h4 class="font-semibold text-lg mb-2">Exemplo Clássico: C(grafite) + 2H₂(g) → CH₄(g)</h4>
                         <p class="text-sm">Para resolver, usamos 3 reações conhecidas:</p>
@@ -187,7 +282,10 @@
                 <!-- Classificação de Cadeias -->
                 <article class="p-6 bg-white rounded-xl shadow-lg">
                     <h3 class="text-2xl font-bold mb-2 text-[#E07A5F]">1. Classificação das Cadeias Carbônicas</h3>
-                    <p class="mb-4">Analisamos as "correntes de carbono" por 4 critérios: se são <b>abertas ou fechadas</b>, <b>normais ou ramificadas</b>, <b>saturadas (só ligação simples) ou insaturadas</b>, e <b>homogêneas (só C) ou heterogêneas (tem outro átomo no meio)</b>.</p>
+                     <div class="p-4 mb-4 bg-blue-50 border-l-4 border-blue-300 rounded-r-lg">
+                        <h4 class="font-bold text-blue-800">O que é isso? (Explicação simples)</h4>
+                        <p class="mt-1 text-blue-900">Imagine que a cadeia de carbono é um trem de LEGO. Nós olhamos para ele e dizemos se: é uma fila com começo e fim (<strong>Aberta</strong>) ou um círculo (<strong>Fechada</strong>); se é uma fila retinha (<strong>Normal</strong>) ou tem peças para os lados (<strong>Ramificada</strong>); se as peças só se ligam com uma mãozinha (<strong>Saturada</strong>) ou com duas/três (<strong>Insaturada</strong>); e se no meio do trem só tem peças de carbono (<strong>Homogênea</strong>) ou tem uma peça de outra cor (<strong>Heterogênea</strong>).</p>
+                    </div>
                     <div class="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-6">
                         <h4 class="font-semibold text-lg mb-2">Exemplo: CH₃—CH₂—O—CH₃</h4>
                         <p class="text-sm">Esta cadeia é: <b>Aberta</b>, <b>Normal</b>, <b>Saturada</b> e <b>Heterogênea</b> (por causa do 'O' entre os carbonos).</p>
@@ -202,8 +300,14 @@
                 <!-- Alcanos -->
                 <article class="p-6 bg-white rounded-xl shadow-lg">
                     <h3 class="text-2xl font-bold mb-2 text-[#E07A5F]">2. Alcanos</h3>
-                    <p class="mb-4">São a família mais simples dos hidrocarbonetos: cadeia aberta e apenas com ligações simples entre carbonos.</p>
-                    <p class="mb-4 font-mono text-center bg-gray-100 p-2 rounded-md"><b>Fórmula Geral:</b> C<sub>n</sub>H<sub>2n+2</sub></p>
+                    <div class="p-4 mb-4 bg-blue-50 border-l-4 border-blue-300 rounded-r-lg">
+                        <h4 class="font-bold text-blue-800">O que é isso? (Explicação simples)</h4>
+                        <p class="mt-1 text-blue-900">Os Alcanos são a família mais simples da química orgânica. Para ser um alcano, a molécula precisa ser uma cadeia <strong>Aberta</strong>, <strong>Saturada</strong> (só ligações simples entre carbonos), e ser um <strong>Hidrocarboneto</strong> (só ter Carbono e Hidrogênio). <br><b>Exemplo prático:</b> Se um alcano tem <strong>3 carbonos</strong> (n=3), a fórmula diz que ele terá `2×3 + 2 = 8` hidrogênios. Sua fórmula será `C₃H₈`.</p>
+                    </div>
+                    <div class="mb-4 font-mono text-center bg-gray-100 p-2 rounded-md">
+                        <p><b>Fórmula Geral:</b> C<sub>n</sub>H<sub>2n+2</sub></p>
+                        <p class="text-xs text-gray-600"><i><b>Legenda:</b><br><b>n</b> = o número de átomos de Carbono na molécula</i></p>
+                    </div>
                     <div class="grid md:grid-cols-2 gap-6 mb-6">
                         <div class="bg-green-50 p-4 rounded-lg border border-green-200">
                             <h4 class="font-semibold text-lg mb-2">Gerador de Alcanos</h4>
@@ -261,8 +365,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 result.candidates[0].content.parts.length > 0) {
                 return result.candidates[0].content.parts[0].text;
             } else {
-                // Se a resposta estiver vazia, pode ser uma questão de segurança do modelo.
-                // Vamos verificar o finishReason.
                 if (result.candidates && result.candidates[0].finishReason === 'SAFETY') {
                     return "A resposta foi bloqueada por questões de segurança. Tente um prompt diferente.";
                 }
@@ -302,30 +404,92 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    function setupDoubtSection(problemBtnId, problemResId, doubtSectionId, doubtInputId, doubtBtnId, doubtResId, promptGenerator) {
+        const problemBtn = document.getElementById(problemBtnId);
+        const problemResEl = document.getElementById(problemResId);
+        const doubtSectionEl = document.getElementById(doubtSectionId);
+        const doubtInputEl = document.getElementById(doubtInputId);
+        const doubtBtn = document.getElementById(doubtBtnId);
+        const doubtResEl = document.getElementById(doubtResId);
+
+        problemBtn.addEventListener('click', async () => {
+            showLoader(problemResEl);
+            doubtSectionEl.style.display = 'none';
+            doubtResEl.innerHTML = '';
+            doubtInputEl.value = '';
+            const response = await callGemini(promptGenerator());
+            problemResEl.innerHTML = response.replace(/### (.*?)\n/g, '<h4 class="font-semibold text-lg my-2">$1</h4>').replace(/\n/g, '<br>');
+            if (!response.startsWith("Erro")) {
+                doubtSectionEl.style.display = 'block';
+            }
+        });
+
+        doubtBtn.addEventListener('click', async () => {
+            const userDoubt = doubtInputEl.value;
+            const problemContext = problemResEl.innerText;
+            if (!userDoubt.trim()) {
+                doubtResEl.innerHTML = "Por favor, digite sua dúvida.";
+                return;
+            }
+            showLoader(doubtResEl);
+            const prompt = `Contexto: Um estudante está resolvendo o seguinte problema de química que você gerou: "${problemContext}". A dúvida específica do estudante é: "${userDoubt}". Por favor, responda a essa dúvida de forma clara, direta e focada na pergunta, como um professor faria.`;
+            const response = await callGemini(prompt);
+            doubtResEl.innerHTML = response.replace(/\n/g, '<br>');
+        });
+    }
+
     // --- QUÍMICA 1: SOLUÇÕES ---
-    document.getElementById('btn-gemini-cc').addEventListener('click', async () => {
-        const resEl = document.getElementById('gemini-res-cc');
-        showLoader(resEl);
-        const prompt = "Crie dois novos e únicos problemas de química sobre Concentração Comum (massa/volume) em português. Seja criativo, usando valores, substâncias (como suco em pó, sal, medicamento) e contextos diferentes a cada vez. Formate a resposta exatamente assim: comece com '### Questão Fácil', seguido do enunciado, passos e resultado. Depois, '### Questão Difícil' com enunciado, passos e resultado. A questão difícil deve exigir um passo extra, como conversão de unidades ou manipulação da fórmula.";
-        const response = await callGemini(prompt);
-        resEl.innerHTML = response.replace(/### (.*?)\n/g, '<h4 class="font-semibold text-lg my-2">$1</h4>').replace(/\n/g, '<br>');
-    });
-    
-    document.getElementById('btn-gemini-cm').addEventListener('click', async () => {
-        const resEl = document.getElementById('gemini-res-cm');
-        showLoader(resEl);
-        const prompt = "Crie dois novos e únicos problemas de química sobre Concentração Molar em português. Seja criativo, usando valores, substâncias (como Glicose, Sacarose, NaCl) e contextos diferentes a cada vez. Formate a resposta exatamente assim: comece com '### Questão Fácil', seguido do enunciado, passos e resultado. Depois, '### Questão Difícil' com enunciado, passos e resultado. A questão difícil deve exigir o cálculo do número de mols a partir da massa e da massa molar antes de calcular a molaridade.";
-        const response = await callGemini(prompt);
-        resEl.innerHTML = response.replace(/### (.*?)\n/g, '<h4 class="font-semibold text-lg my-2">$1</h4>').replace(/\n/g, '<br>');
+    document.getElementById('btn-calc-cc').addEventListener('click', () => {
+        const m = parseFloat(document.getElementById('cc-massa').value);
+        const V = parseFloat(document.getElementById('cc-volume').value);
+        const resEl = document.getElementById('res-cc');
+        if (!isNaN(m) && !isNaN(V) && V > 0) {
+            const C = m / V;
+            resEl.textContent = `C = ${C.toFixed(2)} g/L`;
+        } else {
+            resEl.textContent = 'Valores inválidos.';
+        }
     });
 
-    document.getElementById('btn-gemini-diluicao').addEventListener('click', async () => {
-        const resEl = document.getElementById('gemini-res-diluicao');
-        showLoader(resEl);
-        const prompt = "Crie dois novos e únicos problemas de química sobre Diluição em português. Seja criativo, usando valores, soluções (como ácido de bateria, suco concentrado, desinfetante) e contextos diferentes a cada vez. Formate a resposta exatamente assim: comece com '### Questão Fácil', seguido do enunciado, passos e resultado para achar a concentração final. Depois, '### Questão Difícil' com enunciado, passos e resultado para achar o volume de solvente a ser adicionado.";
-        const response = await callGemini(prompt);
-        resEl.innerHTML = response.replace(/### (.*?)\n/g, '<h4 class="font-semibold text-lg my-2">$1</h4>').replace(/\n/g, '<br>');
+    document.getElementById('btn-calc-cm').addEventListener('click', () => {
+        const n = parseFloat(document.getElementById('cm-mols').value);
+        const V = parseFloat(document.getElementById('cm-volume').value);
+        const resEl = document.getElementById('res-cm');
+        if (!isNaN(n) && !isNaN(V) && V > 0) {
+            const M = n / V;
+            resEl.textContent = `M = ${M.toFixed(2)} mol/L`;
+        } else {
+            resEl.textContent = 'Valores inválidos.';
+        }
     });
+    
+    document.getElementById('btn-calc-d').addEventListener('click', () => {
+        const c1 = parseFloat(document.getElementById('d-c1').value);
+        const v1 = parseFloat(document.getElementById('d-v1').value);
+        const v2 = parseFloat(document.getElementById('d-v2').value);
+        const resEl = document.getElementById('res-d');
+        if (!isNaN(c1) && !isNaN(v1) && !isNaN(v2) && v2 > 0) {
+            const c2 = (c1 * v1) / v2;
+            resEl.textContent = `C₂ = ${c2.toFixed(2)}`;
+        } else {
+            resEl.textContent = 'Valores inválidos.';
+        }
+    });
+
+    setupDoubtSection(
+        'btn-gemini-cc', 'gemini-res-cc', 'doubt-section-cc', 'doubt-input-cc', 'btn-doubt-cc', 'gemini-res-doubt-cc',
+        () => "Crie dois novos e únicos problemas de química sobre Concentração Comum (massa/volume) em português. Seja criativo, usando valores, substâncias (como suco em pó, sal, medicamento) e contextos diferentes a cada vez. Formate a resposta exatamente assim: comece com '### Questão Fácil', seguido do enunciado, uma pequena legenda (ex: C=Concentração, m=massa, V=volume), passos e resultado. Depois, '### Questão Difícil' com a mesma estrutura."
+    );
+    
+    setupDoubtSection(
+        'btn-gemini-cm', 'gemini-res-cm', 'doubt-section-cm', 'doubt-input-cm', 'btn-doubt-cm', 'gemini-res-doubt-cm',
+        () => "Crie dois novos e únicos problemas de química sobre Concentração Molar em português. Seja criativo, usando valores, substâncias (como Glicose, Sacarose, NaCl) e contextos diferentes a cada vez. Formate a resposta exatamente assim: comece com '### Questão Fácil', seguido do enunciado, uma pequena legenda (ex: M=Molaridade, n=mols, V=volume), passos e resultado. Depois, '### Questão Difícil' com a mesma estrutura."
+    );
+
+    setupDoubtSection(
+        'btn-gemini-diluicao', 'gemini-res-diluicao', 'doubt-section-diluicao', 'doubt-input-diluicao', 'btn-doubt-diluicao', 'gemini-res-doubt-diluicao',
+        () => "Crie dois novos e únicos problemas de química sobre Diluição em português. Seja criativo, usando valores, soluções (como ácido de bateria, suco concentrado, desinfetante) e contextos diferentes a cada vez. Formate a resposta exatamente assim: comece com '### Questão Fácil', seguido do enunciado, uma pequena legenda (ex: C1=Conc. inicial), passos e resultado para achar a concentração final. Depois, '### Questão Difícil' com a mesma estrutura."
+    );
 
 
     // --- QUÍMICA 2: TERMOQUÍMICA ---
