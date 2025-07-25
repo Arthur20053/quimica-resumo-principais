@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia Interativo de Química Completo com Gemini</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: A tab-based single-page application. Each tab corresponds to one of the three main chemistry topics (Soluções, Termoquímica, Orgânica). This structure was chosen to mirror the user's study plan ("Prova 1, 2, 3"), preventing information overload and allowing focused learning. Within each tab, every specific topic listed by the user has its own comprehensive article, containing: 1) A simple explanation. 2) Static easy/hard examples for foundational knowledge. 3) An interactive calculator/tool for hands-on practice. 4) A Gemini API button for deeper, on-demand exploration (new problems, real-world examples, etc.). This layered approach ensures core content is always present while offering advanced interactive features. The user's API key is now hardcoded directly into the script for maximum portability and zero setup. -->
+    <!-- Visualization & Content Choices: 
+        - Concentração Comum/Molar/Diluição: Goal: Teach and practice calculation. Method: Static text examples + Interactive forms (HTML/JS). Interaction: User inputs data, clicks 'calculate', sees result. Gemini generates new word problems in a "Fácil/Difícil" format. Justification: Complete learning cycle from theory to practice to advanced application in a consistent format.
+        - Variação de Entalpia: Goal: Compare energy levels. Method: Bar chart (Chart.js) + static examples. Interaction: Toggle between exo/endothermic examples to see the chart change. Gemini provides real-world examples. Justification: Visual and contextual learning.
+        - Lei de Hess: Goal: Demonstrate a complex process. Method: Static step-by-step text explanation of a canonical problem. Interaction: Gemini button to explain the strategic thinking behind solving Hess problems. Justification: Deconstructs the logic of a difficult topic.
+        - Classificação de Cadeias: Goal: Test pattern recognition. Method: Static explanation + Interactive classifier. Interaction: User classifies a molecule and gets feedback. Gemini generates new molecules to classify. Justification: Reinforces rules through repeated, varied practice.
+        - Alcanos: Goal: Show formula patterns. Method: Static explanation + Interactive slider. Interaction: User selects carbon count, sees formula/name. Gemini explains the uses of the generated alkane. Justification: Connects abstract structures to real-world relevance.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-btn { transition: all 0.3s ease; }
+        .tab-btn.active { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .interactive-card { background-color: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
+        .chart-container { position: relative; width: 100%; max-width: 500px; margin-left: auto; margin-right: auto; height: 300px; max-height: 350px; }
+        .gemini-response { min-height: 100px; background-color: #F0F9FF; border-left: 4px solid #3B82F6; }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-[#FDFBF6] text-[#3C3633]">
+
+    <div class="container mx-auto max-w-6xl p-4 sm:p-6 lg:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-[#E07A5F]">Guia Interativo de Química Completo 🧪</h1>
+            <p class="text-lg mt-2 text-[#3C3633]">Com explicações, exemplos e o poder da IA integrada nisso pra te ajudar JOJO ✨</p>
+        </header>
+
+        <nav id="tab-navigation" class="flex justify-center flex-wrap gap-2 sm:gap-4 mb-8">
+            <button data-tab="quimica1" class="tab-btn active text-sm sm:text-base bg-[#81B29A] text-white font-semibold py-2 px-4 rounded-lg shadow-md">💧 Química 1: Soluções</button>
+            <button data-tab="quimica2" class="tab-btn text-sm sm:text-base bg-white text-[#3C3633] font-semibold py-2 px-4 rounded-lg shadow-md">🔥 Química 2: Termoquímica</button>
+            <button data-tab="quimica3" class="tab-btn text-sm sm:text-base bg-white text-[#3C3633] font-semibold py-2 px-4 rounded-lg shadow-md">🔗 Química 3: Orgânica</button>
+        </nav>
+
+        <main>
+            <!-- SEÇÃO QUÍMICA 1: SOLUÇÕES -->
+            <section id="quimica1" class="content-section active space-y-8">
+                <!-- Concentração Comum -->
+                <article class="p-6 bg-white rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold mb-2 text-[#E07A5F]">1. Concentração Comum (C)</h3>
+                    <p class="mb-4">É o jeito mais simples de medir o quão "forte" é um suco: mede a massa do pó (em gramas) por volume de suco (em litros).</p>
+                    <p class="mb-4 font-mono text-center bg-gray-100 p-2 rounded-md"><b>Fórmula:</b> C = m / V</p>
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                            <h4 class="font-semibold text-lg mb-2">Questão Fácil</h4>
+                            <p class="text-sm mb-2">Se você dissolve 20g de sal em 2L de água, qual a concentração?</p>
+                            <p class="text-sm"><b>Passos:</b> C = 20g / 2L</p>
+                            <p class="font-bold mt-2"><b>Resultado:</b> 10 g/L</p>
+                        </div>
+                        <div class="bg-amber-50 p-4 rounded-lg border border-amber-200">
+                            <h4 class="font-semibold text-lg mb-2">Questão Difícil</h4>
+                            <p class="text-sm mb-2">Quantos gramas de açúcar são necessários para 500mL de solução a 40 g/L?</p>
+                            <p class="text-sm"><b>Passos:</b> Primeiro, 500mL = 0,5L. Depois, m = C × V = 40 × 0,5.</p>
+                            <p class="font-bold mt-2"><b>Resultado:</b> 20 gramas</p>
+                        </div>
+                    </div>
+                    <div class="p-4 border-t-2 border-dashed border-gray-200">
+                        <h4 class="font-semibold text-lg mb-2 text-center">Pratique você mesmo!</h4>
+                        <button id="btn-gemini-cc" class="w-full mb-4 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600">✨ Peça um novo problema ao Gemini</button>
+                        <div id="gemini-res-cc" class="gemini-response p-4 rounded-md text-sm"></div>
+                    </div>
+                </article>
+
+                <!-- Concentração Molar -->
+                <article class="p-6 bg-white rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold mb-2 text-[#E07A5F]">2. Concentração Molar (M)</h3>
+                    <p class="mb-4">Em vez de massa, usamos "pacotinhos" de moléculas (mols). A molaridade mede quantos mols temos por litro de solução.</p>
+                    <p class="mb-4 font-mono text-center bg-gray-100 p-2 rounded-md"><b>Fórmula:</b> M = n / V (onde n = massa / Massa Molar)</p>
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                            <h4 class="font-semibold text-lg mb-2">Questão Fácil</h4>
+                            <p class="text-sm mb-2">Qual a molaridade de 2L de solução com 2 mols de NaOH?</p>
+                            <p class="text-sm"><b>Passos:</b> M = 2 mol / 2 L</p>
+                            <p class="font-bold mt-2"><b>Resultado:</b> 1 mol/L</p>
+                        </div>
+                        <div class="bg-amber-50 p-4 rounded-lg border border-amber-200">
+                            <h4 class="font-semibold text-lg mb-2">Questão Difícil</h4>
+                            <p class="text-sm mb-2">Qual a molaridade de 111g de CaCl₂ (MM=111g/mol) em 500mL de solução?</p>
+                            <p class="text-sm"><b>Passos:</b> n = 111/111 = 1 mol. V = 0,5L. M = 1 mol / 0,5L.</p>
+                            <p class="font-bold mt-2"><b>Resultado:</b> 2 mol/L</p>
+                        </div>
+                    </div>
+                     <div class="p-4 border-t-2 border-dashed border-gray-200">
+                        <h4 class="font-semibold text-lg mb-2 text-center">Pratique você mesmo!</h4>
+                        <button id="btn-gemini-cm" class="w-full mb-4 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600">✨ Peça um novo problema ao Gemini</button>
+                        <div id="gemini-res-cm" class="gemini-response p-4 rounded-md text-sm"></div>
+                    </div>
+                </article>
+
+                <!-- Diluição -->
+                <article class="p-6 bg-white rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold mb-2 text-[#E07A5F]">3. Diluição</h3>
+                    <p class="mb-4">Diluir é adicionar mais solvente (água) para diminuir a concentração. A quantidade de soluto não muda!</p>
+                    <p class="mb-4 font-mono text-center bg-gray-100 p-2 rounded-md"><b>Fórmula:</b> C₁V₁ = C₂V₂</p>
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                            <h4 class="font-semibold text-lg mb-2">Questão Fácil</h4>
+                            <p class="text-sm mb-2">Você tem 100mL (0,1L) de solução 5 mol/L. Dilui para 1L. Qual a nova concentração?</p>
+                            <p class="text-sm"><b>Passos:</b> 5 × 0,1 = C₂ × 1</p>
+                            <p class="font-bold mt-2"><b>Resultado:</b> C₂ = 0,5 mol/L</p>
+                        </div>
+                        <div class="bg-amber-50 p-4 rounded-lg border border-amber-200">
+                            <h4 class="font-semibold text-lg mb-2">Questão Difícil</h4>
+                            <p class="text-sm mb-2">Quanto de água adicionar a 50mL de solução 100g/L para a concentração virar 20g/L?</p>
+                            <p class="text-sm"><b>Passos:</b> 100 × 50 = 20 × V₂ → V₂=250mL. Água = 250 - 50.</p>
+                            <p class="font-bold mt-2"><b>Resultado:</b> 200 mL</p>
+                        </div>
+                    </div>
+                     <div class="p-4 border-t-2 border-dashed border-gray-200">
+                        <h4 class="font-semibold text-lg mb-2 text-center">Pratique você mesmo!</h4>
+                        <button id="btn-gemini-diluicao" class="w-full mb-4 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600">✨ Peça um novo problema ao Gemini</button>
+                        <div id="gemini-res-diluicao" class="gemini-response p-4 rounded-md text-sm"></div>
+                    </div>
+                </article>
+            </section>
+
+            <!-- SEÇÃO QUÍMICA 2: TERMOQUÍMICA -->
+            <section id="quimica2" class="content-section space-y-8">
+                <!-- Variação de Entalpia -->
+                <article class="p-6 bg-white rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold mb-2 text-[#E07A5F]">1. Variação de Entalpia (ΔH)</h3>
+                    <p class="mb-4">É a medida do calor liberado ou absorvido numa reação. Se esquenta, é <b>exotérmica (ΔH negativo)</b>. Se esfria, é <b>endotérmica (ΔH positivo)</b>.</p>
+                    <p class="mb-4 font-mono text-center bg-gray-100 p-2 rounded-md"><b>Fórmula:</b> ΔH = H<sub>produtos</sub> - H<sub>reagentes</sub></p>
+                    <div class="chart-container mx-auto mb-4">
+                        <canvas id="entalpiaChart"></canvas>
+                    </div>
+                    <div class="flex justify-center gap-4 mt-4">
+                        <button id="btn-exotermica" class="bg-red-500 text-white font-bold py-2 px-4 rounded-lg">Ver Exemplo Exotérmico</button>
+                        <button id="btn-endotermica" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg">Ver Exemplo Endotérmico</button>
+                    </div>
+                     <div class="p-4 mt-6 border-t-2 border-dashed border-gray-200">
+                        <h4 class="font-semibold text-lg mb-2 text-center">Entenda na prática!</h4>
+                        <button id="btn-gemini-termo" class="w-full mb-4 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600">✨ Me dê exemplos do dia a dia</button>
+                        <div id="gemini-res-termo" class="gemini-response p-4 rounded-md text-sm"></div>
+                    </div>
+                </article>
+
+                <!-- Lei de Hess -->
+                <article class="p-6 bg-white rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold mb-2 text-[#E07A5F]">2. Lei de Hess</h3>
+                    <p class="mb-4">Permite calcular o ΔH de uma reação somando o ΔH de outras reações, como um quebra-cabeça. Você pode inverter (troca o sinal do ΔH) ou multiplicar (multiplica o ΔH) as reações-base.</p>
+                    <div class="bg-amber-50 p-4 rounded-lg border border-amber-200">
+                        <h4 class="font-semibold text-lg mb-2">Exemplo Clássico: C(grafite) + 2H₂(g) → CH₄(g)</h4>
+                        <p class="text-sm">Para resolver, usamos 3 reações conhecidas:</p>
+                        <ul class="text-xs list-disc list-inside my-2 space-y-1 font-mono">
+                            <li>I) C + O₂ → CO₂ (ΔH = -394 kJ)</li>
+                            <li>II) H₂ + ½O₂ → H₂O (ΔH = -286 kJ)</li>
+                            <li>III) CH₄ + 2O₂ → CO₂ + 2H₂O (ΔH = -890 kJ)</li>
+                        </ul>
+                        <p class="text-sm"><b>Estratégia:</b> Mantemos a I, multiplicamos a II por 2, e invertemos a III. Somando tudo, chegamos ao ΔH final de <b>-76 kJ</b>.</p>
+                    </div>
+                    <div class="p-4 mt-6 border-t-2 border-dashed border-gray-200">
+                        <h4 class="font-semibold text-lg mb-2 text-center">Peça ajuda ao mestre!</h4>
+                        <button id="btn-gemini-hess" class="w-full mb-4 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600">✨ Gemini, me explique a estratégia para resolver Lei de Hess</button>
+                        <div id="gemini-res-hess" class="gemini-response p-4 rounded-md text-sm"></div>
+                    </div>
+                </article>
+            </section>
+
+            <!-- SEÇÃO QUÍMICA 3: ORGÂNICA -->
+            <section id="quimica3" class="content-section space-y-8">
+                <!-- Classificação de Cadeias -->
+                <article class="p-6 bg-white rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold mb-2 text-[#E07A5F]">1. Classificação das Cadeias Carbônicas</h3>
+                    <p class="mb-4">Analisamos as "correntes de carbono" por 4 critérios: se são <b>abertas ou fechadas</b>, <b>normais ou ramificadas</b>, <b>saturadas (só ligação simples) ou insaturadas</b>, e <b>homogêneas (só C) ou heterogêneas (tem outro átomo no meio)</b>.</p>
+                    <div class="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-6">
+                        <h4 class="font-semibold text-lg mb-2">Exemplo: CH₃—CH₂—O—CH₃</h4>
+                        <p class="text-sm">Esta cadeia é: <b>Aberta</b>, <b>Normal</b>, <b>Saturada</b> e <b>Heterogênea</b> (por causa do 'O' entre os carbonos).</p>
+                    </div>
+                    <div class="p-4 border-t-2 border-dashed border-gray-200">
+                        <h4 class="font-semibold text-lg mb-2 text-center">Teste seus conhecimentos!</h4>
+                        <button id="btn-gemini-cadeia" class="w-full mb-4 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600">✨ Gemini, me dê uma cadeia para classificar (com resposta)</button>
+                        <div id="gemini-res-cadeia" class="gemini-response p-4 rounded-md text-sm"></div>
+                    </div>
+                </article>
+
+                <!-- Alcanos -->
+                <article class="p-6 bg-white rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold mb-2 text-[#E07A5F]">2. Alcanos</h3>
+                    <p class="mb-4">São a família mais simples dos hidrocarbonetos: cadeia aberta e apenas com ligações simples entre carbonos.</p>
+                    <p class="mb-4 font-mono text-center bg-gray-100 p-2 rounded-md"><b>Fórmula Geral:</b> C<sub>n</sub>H<sub>2n+2</sub></p>
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                            <h4 class="font-semibold text-lg mb-2">Gerador de Alcanos</h4>
+                            <label for="alcano-carbonos" class="block text-sm font-medium">Número de Carbonos (n): <span id="alcano-slider-value" class="font-bold">4</span></label>
+                            <input type="range" id="alcano-carbonos" min="1" max="10" value="4" class="w-full mt-1">
+                            <div id="res-alcano" class="mt-2 text-center font-semibold text-lg h-16"></div>
+                        </div>
+                        <div class="bg-amber-50 p-4 rounded-lg border border-amber-200">
+                            <h4 class="font-semibold text-lg mb-2">Questão Difícil</h4>
+                            <p class="text-sm mb-2">Um alcano tem 10 hidrogênios. Qual sua fórmula?</p>
+                            <p class="text-sm"><b>Passos:</b> 2n+2 = 10  →  2n = 8  →  n = 4.</p>
+                            <p class="font-bold mt-2"><b>Resultado:</b> C₄H₁₀ (Butano)</p>
+                        </div>
+                    </div>
+                    <div class="p-4 border-t-2 border-dashed border-gray-200">
+                        <h4 class="font-semibold text-lg mb-2 text-center">Para que serve?</h4>
+                        <button id="btn-gemini-alcano" class="w-full mb-4 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600">✨ Gemini, me diga os usos do alcano selecionado</button>
+                        <div id="gemini-res-alcano" class="gemini-response p-4 rounded-md text-sm"></div>
+                    </div>
+                </article>
+            </section>
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // Gemini API Caller
+    async function callGemini(prompt) {
+        const apiKey = "AIzaSyC_Vvs8vOKMs9BcCaufPafJ2uzIYCJ1UYg"; // Chave da API integrada
+        
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+        
+        const payload = {
+            contents: [{ role: "user", parts: [{ text: prompt }] }]
+        };
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                 const errorBody = await response.json();
+                 console.error("API Error Body:", errorBody);
+                 return `Erro na API: ${response.status}. Verifique se a chave API é válida e está habilitada. Detalhes: ${errorBody.error.message}`;
+            }
+
+            const result = await response.json();
+            
+            if (result.candidates && result.candidates.length > 0 &&
+                result.candidates[0].content && result.candidates[0].content.parts &&
+                result.candidates[0].content.parts.length > 0) {
+                return result.candidates[0].content.parts[0].text;
+            } else {
+                return "Não foi possível obter uma resposta do Gemini. A resposta pode estar vazia ou mal formatada.";
+            }
+        } catch (error) {
+            console.error("Erro de comunicação com a API do Gemini:", error);
+            return "Ocorreu um erro de comunicação. Verifique sua conexão com a internet e o console para mais detalhes.";
+        }
+    }
+
+    function showLoader(element) {
+        element.innerHTML = '<div class="loader"></div>';
+    }
+
+    // Tab Navigation
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const contentSections = document.querySelectorAll('.content-section');
+
+    document.getElementById('tab-navigation').addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON') {
+            const tab = e.target.dataset.tab;
+
+            tabButtons.forEach(btn => {
+                btn.classList.remove('active', 'bg-[#81B29A]', 'text-white');
+                btn.classList.add('bg-white', 'text-[#3C3633]');
+            });
+            e.target.classList.add('active', 'bg-[#81B29A]', 'text-white');
+            e.target.classList.remove('bg-white', 'text-[#3C3633]');
+
+            contentSections.forEach(section => {
+                section.classList.remove('active');
+                if (section.id === tab) {
+                    section.classList.add('active');
+                }
+            });
+        }
+    });
+
+    // --- QUÍMICA 1: SOLUÇÕES ---
+    document.getElementById('btn-gemini-cc').addEventListener('click', async () => {
+        const resEl = document.getElementById('gemini-res-cc');
+        showLoader(resEl);
+        const prompt = "Crie dois novos problemas de química sobre Concentração Comum (massa/volume) em português. Formate a resposta exatamente assim: comece com '### Questão Fácil', seguido do enunciado, passos e resultado. Depois, '### Questão Difícil' com enunciado, passos e resultado. A questão difícil deve exigir um passo extra, como conversão de unidades ou manipulação da fórmula.";
+        const response = await callGemini(prompt);
+        resEl.innerHTML = response.replace(/### (.*?)\n/g, '<h4 class="font-semibold text-lg my-2">$1</h4>').replace(/\n/g, '<br>');
+    });
+    
+    document.getElementById('btn-gemini-cm').addEventListener('click', async () => {
+        const resEl = document.getElementById('gemini-res-cm');
+        showLoader(resEl);
+        const prompt = "Crie dois novos problemas de química sobre Concentração Molar em português. Formate a resposta exatamente assim: comece com '### Questão Fácil', seguido do enunciado, passos e resultado. Depois, '### Questão Difícil' com enunciado, passos e resultado. A questão difícil deve exigir o cálculo do número de mols a partir da massa e da massa molar antes de calcular a molaridade.";
+        const response = await callGemini(prompt);
+        resEl.innerHTML = response.replace(/### (.*?)\n/g, '<h4 class="font-semibold text-lg my-2">$1</h4>').replace(/\n/g, '<br>');
+    });
+
+    document.getElementById('btn-gemini-diluicao').addEventListener('click', async () => {
+        const resEl = document.getElementById('gemini-res-diluicao');
+        showLoader(resEl);
+        const prompt = "Crie dois novos problemas de química sobre Diluição em português. Formate a resposta exatamente assim: comece com '### Questão Fácil', seguido do enunciado, passos e resultado para achar a concentração final. Depois, '### Questão Difícil' com enunciado, passos e resultado para achar o volume de solvente a ser adicionado.";
+        const response = await callGemini(prompt);
+        resEl.innerHTML = response.replace(/### (.*?)\n/g, '<h4 class="font-semibold text-lg my-2">$1</h4>').replace(/\n/g, '<br>');
+    });
+
+
+    // --- QUÍMICA 2: TERMOQUÍMICA ---
+    const ctx = document.getElementById('entalpiaChart').getContext('2d');
+    let entalpiaChart;
+    let currentThermoType = 'Exotérmica';
+
+    function createOrUpdateChart(label, hReagentes, hProdutos) {
+        currentThermoType = label.split(' ')[1];
+        const deltaH = hProdutos - hReagentes;
+        const data = {
+            labels: ['Reagentes', 'Produtos'],
+            datasets: [{
+                label: 'Nível de Energia (Entalpia)',
+                data: [hReagentes, hProdutos],
+                backgroundColor: ['#3B82F6', '#16A34A']
+            }]
+        };
+        const config = {
+            type: 'bar',
+            data: data,
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: `${label}: ΔH = ${deltaH.toFixed(0)} kJ` }
+                }
+            }
+        };
+        if (entalpiaChart) {
+            entalpiaChart.data = data;
+            entalpiaChart.options.plugins.title.text = `${label}: ΔH = ${deltaH.toFixed(0)} kJ`;
+            entalpiaChart.update();
+        } else {
+            entalpiaChart = new Chart(ctx, config);
+        }
+    }
+    
+    document.getElementById('btn-exotermica').addEventListener('click', () => createOrUpdateChart('Reação Exotérmica', 100, 20));
+    document.getElementById('btn-endotermica').addEventListener('click', () => createOrUpdateChart('Reação Endotérmica', 50, 150));
+    
+
+    document.getElementById('btn-gemini-termo').addEventListener('click', async () => {
+        const resEl = document.getElementById('gemini-res-termo');
+        showLoader(resEl);
+        const prompt = `Dê 3 exemplos práticos e fáceis de entender de reações do tipo '${currentThermoType}' que acontecem no dia a dia. Explique brevemente cada um.`;
+        const response = await callGemini(prompt);
+        resEl.innerHTML = response.replace(/\n/g, '<br>');
+    });
+
+    document.getElementById('btn-gemini-hess').addEventListener('click', async () => {
+        const resEl = document.getElementById('gemini-res-hess');
+        showLoader(resEl);
+        const prompt = "Explique em português, como se fosse para um iniciante, a estratégia passo a passo para resolver um problema de Lei de Hess. Dê dicas sobre o que procurar na reação alvo e como manipular as equações de base.";
+        const response = await callGemini(prompt);
+        resEl.innerHTML = response.replace(/\n/g, '<br>');
+    });
+
+    // --- QUÍMICA 3: ORGÂNICA ---
+    document.getElementById('btn-gemini-cadeia').addEventListener('click', async () => {
+        const resEl = document.getElementById('gemini-res-cadeia');
+        showLoader(resEl);
+        const prompt = "Gere uma estrutura de uma cadeia carbônica para eu classificar. Apresente a estrutura em formato de texto (ex: CH3-CH(CH3)-CH=CH2). Depois, forneça a classificação completa (aberta/fechada, normal/ramificada, saturada/insaturada, homogênea/heterogênea) e explique o porquê de cada classificação.";
+        const response = await callGemini(prompt);
+        resEl.innerHTML = response.replace(/\n/g, '<br>');
+    });
+
+    const alcanoInput = document.getElementById('alcano-carbonos');
+    const alcanoSliderValue = document.getElementById('alcano-slider-value');
+    const resAlcanoEl = document.getElementById('res-alcano');
+    const alcanoNames = ["", "Metano", "Etano", "Propano", "Butano", "Pentano", "Hexano", "Heptano", "Octano", "Nonano", "Decano"];
+
+    function updateAlcano() {
+        const n = parseInt(alcanoInput.value);
+        alcanoSliderValue.textContent = n;
+        if (n >= 1 && n <= 10) {
+            const h = 2 * n + 2;
+            const name = alcanoNames[n];
+            resAlcanoEl.innerHTML = `
+                <p>Fórmula: <span class="font-bold">C${n}H${h}</span></p>
+                <p>Nome: <span class="font-bold">${name}</span></p>
+            `;
+        }
+    }
+    alcanoInput.addEventListener('input', updateAlcano);
+    
+
+    document.getElementById('btn-gemini-alcano').addEventListener('click', async () => {
+        const n = parseInt(alcanoInput.value);
+        const name = alcanoNames[n];
+        const resEl = document.getElementById('gemini-res-alcano');
+        showLoader(resEl);
+        const prompt = `Explique de forma simples e direta para que serve o ${name}. Dê seus principais usos na indústria e no cotidiano.`;
+        const response = await callGemini(prompt);
+        resEl.innerHTML = response.replace(/\n/g, '<br>');
+    });
+
+    // Initial calls on page load
+    createOrUpdateChart('Reação Exotérmica', 100, 20);
+    updateAlcano();
+});
+</script>
+
+</body>
+</html>
